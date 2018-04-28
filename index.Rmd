@@ -1,0 +1,22 @@
+---
+title: "Legislative Data"
+author: "Hana"
+date: "4/28/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE, echo = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(knitr)
+
+```
+
+```{r Source Data, echo = FALSE}
+source("assignment.R")
+```
+
+```{r Subject Table, echo = FALSE}
+
+kable(subject_df) 
+
+```
