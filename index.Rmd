@@ -8,15 +8,100 @@ output: html_document
 ```{r setup, include=FALSE, echo = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 library(knitr)
+library(dplyr)
+library(httr)
+library(jsonlite)
+
+topic = "taxation"
 
 ```
 
-```{r Source Data, echo = FALSE}
+```{r source_data, echo = FALSE}
 source("assignment.R")
 ```
 
-```{r Subject Table, echo = FALSE}
+## Part One: Table of Tax Related Bills
+```{r subject_table, echo = FALSE}
 
-kable(subject_df) 
+kable(topic_df) 
 
 ```
+
+### Explanations and Summary
+- **bill_id:** The first letters indicate what type of bill it is. "s" means Senate. "hr" means House of Representatives. "hconres" means house concurrent resolution. Concurrent resolutions are legislative measures adopted by both the Senate and the House of Representatives, and they are usually for internal governance. The number after is the bill's number. The number that appears afte the dash is "115," which tells us that these bills comes from the 115th Congress, the Congress that is in session between 2017 and 2018.
+- **short_title:** Many of the bill titles are longer, but the short titles are probably what you hear in the news. For example, the long title of the Taxpayer First Act is "To amend the Internal Revenue Code of 1986 to modernize and improve the Internal Revenue Service, and for other purposes." Of course, that's not memorable or appealing. 
+- **sponsor:** The format of the sponsor column is as follows: The sponsor, the sponsor's state (abbreviated), the sponsor's party (They are usually either Democrat or Republican), number of cosponsors.
+- **latest_major_action:** If a bill becomes a law, the latest major action should read "Became Public Law No: 115-xxx" with 115 meaning the 115th Congress.
+- **congressdotgov_url:** Clicking on this url leads you to the congress.gov page for the bill.
+
+
+#### Resources
+https://en.wikipedia.org/wiki/Concurrent_resolution
+
+## Part Two: Specific Bill
+
+```{r specific_bill_info, echo=FALSE}
+bill_name <- bills[bills$short_title == "Taxpayer First Act", "short_title"]
+sponsor <- bills[bills$short_title == "Taxpayer First Act", "sponsor_name"]
+sponsor_party <- bills[bills$short_title == "Taxpayer First Act", "sponsor_party"]
+sponsor_state <- bills[bills$short_title == "Taxpayer First Act", "sponsor_state"]
+cosponsors <- bills[bills$short_title == "Taxpayer First Act", "cosponsors"]
+latest_major_action <- bills[bills$short_title == "Taxpayer First Act", "latest_major_action"]
+link_to_text <- bills[bills$short_title == "Taxpayer First Act", "congressdotgov_url"]
+```
+
+###`r bill_name`
+
+#### Bill Basics
+`r bill_name` was sponsored by `r sponsor` (`r sponsor_party`, `r sponsor_state`) and has `r cosponsors` cosponsors. Where the bill is now: `r latest_major_action`.
+
+Link to full [bill text](`r link_to_text`)
+
+What bill are you describing? Include any relevant details (e.g., title, sponsors, etc.) using inline R code in case they change later. Be sure and include a link to the bill's full text!
+
+
+#### What is it?
+What is this bill about? Provide your own description of the bill's purpose and context. This will almost certainly require you to do some outside research to understand the full effects of the bill, the factors that led to it, its (expected) impacts, etc. Remember to cite/footnote your sources!
+
+You should take an evaluative stance in describing this bill. Is it something we should encourage our representatives to vote for? To vote against?
+
+Tip: One possible place to find relevant information is on the sponsor's website or social media—they will often issue some kind of press release explaining the motivation for their legislation. These will be highly biased and untrustworthy, but at least you get the public "excuse" for the bill.
+
+#### Bill Actions
+What actions have been taken regarding the bill? Has it been voted on (even multiple times)? To what result?
+
+## Part 3: Representative
+
+```{r Representative Info, echo = FALSE}
+
+name <- paste(member$first_name, member$last_name)
+phone <- roles_df[roles_df$congress == "115", "phone"]
+dotgov <- member$url  
+twitter <- member$twitter_account
+
+```
+
+### `r name`
+- Phone Number:`r phone`
+- Twitter Account: `r twitter`
+- Website: `r dotgov`
+
+#### Table of Recent Bills Sponsored
+
+`r kable(sponsored_and_cosponsored)`
+
+A list or table of recent bills the representative has sponsored or cosponsored, so you know what they have been trying to accomplish. You only need to include the bill titles and identifiers.
+
+The percentage of recent votes in which the represented voted with the majority of the opposing party—that is, the percentage of time a Democrat voted with the Republicans, or a Republican voted with the Democrats. For Independents, list the percentage of time they voted with either of the other parties.
+
+
+
+
+
+
+
+## Questions
+
+1. Getting phone number from a list nested in a dataframe, can't use flatten b/c roles isn't a list
+2. 
+3. what are these variables? Where do I put them? In the .R or .Rmd file? pass what argument through what function, where?
