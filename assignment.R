@@ -1,4 +1,3 @@
-
 # Get Bills on Topic
 source("api_key.R")
 
@@ -124,6 +123,8 @@ recent_votes <- as.data.frame(parsed_recent_votes_body$results)
 
 recent_votes <- flatten(recent_votes)
 
+
+
 select_bills_majority_republican <- 
   recent_votes %>% 
   select(votes.roll_call, votes.bill.title, votes.republican.majority_position)
@@ -146,6 +147,9 @@ rep_votes_df <- as.data.frame(rep_votes$votes)
 
 rep_votes_df <- flatten(rep_votes_df)
 
+rep_votes_df$roll_call <- as.integer(rep_votes_df$roll_call) # Need to convert into integer to match recent_votes
+
+
 select_rep_votes <- 
   rep_votes_df %>% 
   select(roll_call ,bill.title, position)
@@ -154,10 +158,19 @@ select_rep_votes <-
 
 compare_voting_record <- left_join(select_rep_votes, select_bills_majority_republican, by = c("roll_call" = "votes.roll_call"))
   
+filter_yes_republican_majority_position <- 
+  compare_voting_record %>% 
+  filter(votes.republican.majority_position == "Yes")
 
-pct_voted_against_party <- 
-  roles_df %>% 
-  filter(congress == "115") %>% 
-  select(votes_with_party_pct) %>% 
-  mutate(votes_against_party_pct = 100 - votes_with_party_pct) %>% 
-  select(votes_against_party_pct)
+num_yes_republican_majority_position <- nrow(filter_yes_republican_majority_position)
+
+filter_yes_rep_vote <- 
+  filter_yes_republican_majority_position %>% 
+  filter(position == "Yes")
+
+num_yes_rep_vote <- nrow(filter_yes_rep_vote)
+
+pct_rep_vote_with_other_party <- num_yes_rep_vote / num_yes_republican_majority_position
+
+pct_rep_vote_with_other_party <- round(100 * pct_rep_vote_with_other_party) # in percentage
+

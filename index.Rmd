@@ -79,7 +79,7 @@ twitter <- member$twitter_account
 ```
 
 ### `r name`
-- Phone Number:`r phone`
+- Phone Number: `r phone`
 - Twitter Account: `r twitter`
 - Website: `r dotgov`
 
@@ -87,9 +87,8 @@ twitter <- member$twitter_account
 
 `r kable(sponsored_and_cosponsored)`
 
-`r name` voted against his party `r pct_voted_against_party`% of the time in the 115th Congress.
+`r name` voted against his party `r pct_rep_vote_with_other_party`% of the time in the 115th Congress.
 
-The percentage of recent votes in which the represented voted with the majority of the opposing party—that is, the percentage of time a Democrat voted with the Republicans, or a Republican voted with the Democrats. For Independents, list the percentage of time they voted with either of the other parties.
 
 
 
