@@ -57,9 +57,6 @@ link_to_text <- bills[bills$short_title == "Taxpayer First Act", "congressdotgov
 
 Link to full [bill text](`r link_to_text`)
 
-What bill are you describing? Include any relevant details (e.g., title, sponsors, etc.) using inline R code in case they change later. Be sure and include a link to the bill's full text!
-
-
 #### What is it?
 What is this bill about? Provide your own description of the bill's purpose and context. This will almost certainly require you to do some outside research to understand the full effects of the bill, the factors that led to it, its (expected) impacts, etc. Remember to cite/footnote your sources!
 
@@ -90,7 +87,7 @@ twitter <- member$twitter_account
 
 `r kable(sponsored_and_cosponsored)`
 
-A list or table of recent bills the representative has sponsored or cosponsored, so you know what they have been trying to accomplish. You only need to include the bill titles and identifiers.
+`r name` voted against his party `r pct_voted_against_party`% of the time in the 115th Congress.
 
 The percentage of recent votes in which the represented voted with the majority of the opposing party—that is, the percentage of time a Democrat voted with the Republicans, or a Republican voted with the Democrats. For Independents, list the percentage of time they voted with either of the other parties.
 

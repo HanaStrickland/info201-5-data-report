@@ -53,6 +53,8 @@ member <- flatten(member)
 
 roles_df <- as.data.frame(member$roles)
 
+
+
 # Get Bills sponsored by rep
 
 resource_sponsored <- paste0("members/", representative_id , "/bills/introduced.json")
@@ -77,7 +79,6 @@ recent_sponsored_bills <-
   select(bill_id, short_title)
 
 # Get bills cosponsored by rep
-source("api_key.R")
 
 cosponsored_resource <- paste0("members/",representative_id , "/bills/cosponsored.json")
 
@@ -100,6 +101,63 @@ recent_cosponsored_bills <-
   recent_cosponsored_bills %>% 
   select(bill_id, short_title)
 
-# merge recent sponsored and cosponsored bills
+## merge recent sponsored and cosponsored bills
 sponsored_and_cosponsored <- full_join(recent_sponsored_bills, recent_cosponsored_bills, by = c("bill_id" = "bill_id", "short_title" = "short_title"))
 
+# Voted with majority of other party
+
+## Get all recent votes
+
+
+resource_recent_votes <- "house/votes/recent.json"
+
+response_recent_votes <- GET(paste0(base_uri, resource_recent_votes), 
+                             add_headers('X-API-Key' = propublica_key))
+
+
+recent_votes_body <- content(response_recent_votes, "text")
+
+parsed_recent_votes_body <- fromJSON(recent_votes_body)
+
+
+recent_votes <- as.data.frame(parsed_recent_votes_body$results)
+
+recent_votes <- flatten(recent_votes)
+
+select_bills_majority_republican <- 
+  recent_votes %>% 
+  select(votes.roll_call, votes.bill.title, votes.republican.majority_position)
+
+## Get chosen rep's voting record
+resource_rep_votes <- paste0("members/", representative_id, "/votes.json")
+
+response_rep_votes <- GET(paste0(base_uri, resource_rep_votes), 
+                             add_headers('X-API-Key' = propublica_key))
+
+rep_votes_body <- content(response_rep_votes, "text")
+
+parsed_rep_votes_body <- fromJSON(rep_votes_body)
+
+rep_votes <- as.data.frame(parsed_rep_votes_body$results)
+
+rep_votes <- flatten(rep_votes)
+
+rep_votes_df <- as.data.frame(rep_votes$votes)
+
+rep_votes_df <- flatten(rep_votes_df)
+
+select_rep_votes <- 
+  rep_votes_df %>% 
+  select(roll_call ,bill.title, position)
+
+## Merge all votes and rep votes
+
+compare_voting_record <- left_join(select_rep_votes, select_bills_majority_republican, by = c("roll_call" = "votes.roll_call"))
+  
+
+pct_voted_against_party <- 
+  roles_df %>% 
+  filter(congress == "115") %>% 
+  select(votes_with_party_pct) %>% 
+  mutate(votes_against_party_pct = 100 - votes_with_party_pct) %>% 
+  select(votes_against_party_pct)
