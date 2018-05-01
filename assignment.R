@@ -1,6 +1,3 @@
-# Get Bills on Topic
-# Base uri function
-
 ### Get Bills ###
 
 source("api_key.R") # source api_key
@@ -53,21 +50,26 @@ bills_select_col <- function() {
 
 bills_select_df <- bills_select_col()
 
-
 ### Get Representative Contact Info ###
 
-# Function gets some basic contact info on chosen rep
+#Function api response, body, and parsed_body into a function for multiple use
+get_parsed_body <- function(resource) {
+
+  response <- GET(
+    paste0(base_uri(), resource),
+    add_headers("X-API-Key" = propublica_key))
+
+  body <- content(response, "text")
+
+  parsed_body <- fromJSON(body)
+  parsed_body
+
+}
+
 get_rep_info <- function() {
   resource_rep <- paste0("members/", representative_id, ".json")
 
-  response_rep <- GET(
-    paste0(base_uri(), resource_rep),
-    add_headers("X-API-Key" = propublica_key)
-  )
-
-  member_body <- content(response_rep, "text")
-
-  parsed_member_body <- fromJSON(member_body)
+  parsed_member_body <- get_parsed_body(resource_rep)
 
   member <- as.data.frame(parsed_member_body$results)
 
@@ -77,6 +79,9 @@ get_rep_info <- function() {
 }
 
 member <- get_rep_info()
+
+
+
 
 # Function gets more contact info nested in roles column 
 get_rep_roles <- function(){
@@ -92,14 +97,7 @@ rep_roles_df <- get_rep_roles()
 
 resource_sponsored <- paste0("members/", representative_id, "/bills/introduced.json")
 
-response_sponsored <- GET(
-  paste0(base_uri(), resource_sponsored),
-  add_headers("X-API-Key" = propublica_key)
-)
-
-sponsored_body <- content(response_sponsored, "text")
-
-parsed_sponsored_body <- fromJSON(sponsored_body)
+parsed_sponsored_body <- get_parsed_body(resource_sponsored)
 
 sponsored_bills <- as.data.frame(parsed_sponsored_body)
 
@@ -117,20 +115,13 @@ recent_sponsored_bills <-
 
 cosponsored_resource <- paste0("members/", representative_id, "/bills/cosponsored.json")
 
-response_cosponsored <- GET(
-  paste0(base_uri(), cosponsored_resource),
-  add_headers("X-API-Key" = propublica_key)
-)
-
-cosponsored_body <- content(response_cosponsored, "text")
-
-parsed_cosponsored_body <- fromJSON(cosponsored_body)
+parsed_cosponsored_body <- get_parsed_body(cosponsored_resource)
 
 cosponsored_bills <- as.data.frame(parsed_cosponsored_body)
 
 cosponsored_bills <- flatten(cosponsored_bills)
 
-cosponsored_bills <- as.data.frame((cosponsored_bills$results.bills))
+cosponsored_bills <- as.data.frame(cosponsored_bills$results.bills)
 
 recent_cosponsored_bills <- cosponsored_bills[1:10, ]
 
@@ -148,22 +139,11 @@ sponsored_and_cosponsored <- full_join(recent_sponsored_bills, recent_cosponsore
 
 resource_recent_votes <- "house/votes/recent.json"
 
-response_recent_votes <- GET(
-  paste0(base_uri(), resource_recent_votes),
-  add_headers("X-API-Key" = propublica_key)
-)
-
-
-recent_votes_body <- content(response_recent_votes, "text")
-
-parsed_recent_votes_body <- fromJSON(recent_votes_body)
-
+parsed_recent_votes_body <- get_parsed_body(resource_recent_votes)
 
 recent_votes <- as.data.frame(parsed_recent_votes_body$results)
 
 recent_votes <- flatten(recent_votes)
-
-
 
 select_bills_majority_republican <-
   recent_votes %>%
@@ -172,14 +152,7 @@ select_bills_majority_republican <-
 ## Get chosen rep's voting record
 resource_rep_votes <- paste0("members/", representative_id, "/votes.json")
 
-response_rep_votes <- GET(
-  paste0(base_uri(), resource_rep_votes),
-  add_headers("X-API-Key" = propublica_key)
-)
-
-rep_votes_body <- content(response_rep_votes, "text")
-
-parsed_rep_votes_body <- fromJSON(rep_votes_body)
+parsed_rep_votes_body <- get_parsed_body(resource_rep_votes)
 
 rep_votes <- as.data.frame(parsed_rep_votes_body$results)
 
