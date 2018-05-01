@@ -16,17 +16,6 @@ representative_id <- "S000510"
 source("assignment.R")
 ```
 
-```{r specific_bill_info, echo=FALSE}
-bill_name <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "short_title"]
-bill_long_title <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "title"]
-sponsor <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "sponsor_name"]
-sponsor_party <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "sponsor_party"]
-sponsor_state <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "sponsor_state"]
-cosponsors <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "cosponsors"]
-latest_major_action <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "latest_major_action"]
-link_to_text <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "congressdotgov_url"]
-passed_house <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "house_passage"]
-```
 
 ```{r Representative Info, echo = FALSE}
 
@@ -38,12 +27,12 @@ twitter <- member$twitter_account
 ```
 ## Introduction
 
-> Part one is a table of recent `r topic` related bills. Part two is information on the `r bill_name`. Part three is information about my local representative, `r name`. 
+>Part one is a table of recent `r topic` related bills. Part two gives information on the `r bill_name`. Part three gives information about my local representative, `r name`. 
 
-> The Legislative Branch, also called Congress, is made up of a group of people called legislators. The US has a bicameral legislature (meaning two houses of Congress). They are the Senate, whose members are called senators, and the House of Representatives, whose members are called representatives or congressmen. Senators are elected for a six year term while representatives are elected for two year terms. 
+>The Legislative Branch, also called Congress, is made up of a group of people called legislators. The US has a bicameral legislature (meaning two houses of Congress). They are the Senate, whose members are called senators, and the House of Representatives, whose members are called representatives or congressmen. Senators are elected for a six year term while representatives are elected for two year terms. 
 
-> The Senate and the House introduce and amend their own versions of a bill they want to pass, but the Senate and the House must vote on and pass the exact same version of a bill.
-
+>The Senate and the House introduce and amend their own versions of a bill they want to pass, but the Senate and the House must vote on and pass the exact same version of a bill.
+>
 > For a fun video on how a bill becomes a law, watch School House Rock's [I'm Just a Bill](https://www.youtube.com/watch?v=FFroMQlKiag). 
 
 
@@ -60,17 +49,15 @@ kable(bills_select_df)
 - **bill_id:** The first letters indicate what type of bill it is. "s" means Senate. "hr" means House of Representatives. "hconres" means house concurrent resolution. Concurrent resolutions are legislative measures adopted by both the Senate and the House of Representatives, and they are usually for internal governance. The number after is the bill's number. The number that appears after the dash is "115," which tells us that these bills come from the 115th Congress, the Congress that is in session between 2017 and 2018.
 - **short_title:** Many of the bill titles are longer, but the short titles are probably what you hear in the news. For example, the long title of the `r bill_name` is "`r bill_long_title`". 
 - **sponsor:** The format of the sponsor column is as follows: The sponsor, the sponsor's state (abbreviated), the sponsor's party (They are usually either Democrat or Republican), number of cosponsors.
-- **latest_major_action:** If a bill introduced in one house passes in another house, the latest major action should read "received in the...[other house that the bill was not introduced in]" If a bill is passed by both houses, then the latest major action should read "Presented to President." If a bill becomes a law, the latest major action should read "Became Public Law No: 115-xxx" with 115 meaning the 115th Congress.
+- **latest_major_action:** If a bill introduced in the house and passes, the latest major action should read "Received in the Senate". It should be the other way around if it was introduced and passed in the Senate. If a bill is passed by both houses, then the latest major action should read "Presented to President." If a bill becomes a law, the latest major action should read "Became Public Law No: 115-xxx" with 115 meaning the 115th Congress.
 - **congressdotgov_url:** Clicking on this url leads you to the congress.gov page for the bill.
-
-
 
 ## Part Two: Specific Bill
 
 ###`r bill_name`
 
 #### Bill Basics
->`r bill_name` was sponsored by `r sponsor` (`r sponsor_party`, `r sponsor_state`) and has `r cosponsors` cosponsors. Where the bill is now: `r latest_major_action`.
+>`r bill_name` was sponsored by `r bill_sponsor` (`r sponsor_party`, `r sponsor_state`) and has `r cosponsors` cosponsors. Where the bill is now: `r latest_major_action`.
 
 >Link to full [bill text](`r link_to_text`)
 
@@ -96,7 +83,7 @@ kable(bills_select_df)
 
 
 #### Bill Actions
-On `r passed_house`, the `r bill_name` passed the House. It will now go to the Senate to be voted on.
+>On `r passed_house`, the `r bill_name` passed the House with a vote of `r yes_faa`-`r no_faa`. It was voted on `r num_times_faa_voted_on` times, including amendments and passage. It will now go to the Senate to be voted on.
 
 ## Part 3: Representative
 
