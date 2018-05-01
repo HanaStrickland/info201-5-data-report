@@ -11,54 +11,84 @@ library(knitr)
 library(dplyr)
 library(httr)
 library(jsonlite)
-
 topic = "taxation"
-
-```
-
-```{r source_data, echo = FALSE}
+representative_id <- "S000510"
 source("assignment.R")
 ```
+
+```{r specific_bill_info, echo=FALSE}
+bill_name <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "short_title"]
+bill_long_title <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "title"]
+sponsor <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "sponsor_name"]
+sponsor_party <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "sponsor_party"]
+sponsor_state <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "sponsor_state"]
+cosponsors <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "cosponsors"]
+latest_major_action <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "latest_major_action"]
+link_to_text <- df_bills_on_topic[df_bills_on_topic$short_title == "FAA Reauthorization Act of 2018", "congressdotgov_url"]
+```
+
+```{r Representative Info, echo = FALSE}
+
+name <- paste(member$first_name, member$last_name)
+phone <- rep_roles_df[rep_roles_df$congress == "115", "phone"]
+dotgov <- member$url  
+twitter <- member$twitter_account
+
+```
+## Introduction
+
+> Part one is a table of recent tax related bills. Part two is information on the `r bill_name`. Part three is information about my local representative, `r name`. 
+
+> The Legislative Branch, also called Congress, is made up of a group of people called legislators. The US has a bicameral legislature (meaning two houses of Congress). They are the Senate, whose members are called senators, and the House of Representatives, whose members are called representatives or congressmen. Senators are elected for a six year term while representatives are elected for two year terms. 
+
+> The Senate and the House introduce and amend their own versions of a bill they want to pass, but the Senate and the House must vote on and pass the same version of a bill.
+
+> For a fun video on how a bill becomes a law, watch School House Rock's [I'm Just a Bill](https://www.youtube.com/watch?v=FFroMQlKiag). 
+
+
+
 
 ## Part One: Table of Tax Related Bills
 ```{r subject_table, echo = FALSE}
 
-kable(topic_df) 
+kable(bills_select_df) 
 
 ```
 
 ### Explanations and Summary
 - **bill_id:** The first letters indicate what type of bill it is. "s" means Senate. "hr" means House of Representatives. "hconres" means house concurrent resolution. Concurrent resolutions are legislative measures adopted by both the Senate and the House of Representatives, and they are usually for internal governance. The number after is the bill's number. The number that appears afte the dash is "115," which tells us that these bills comes from the 115th Congress, the Congress that is in session between 2017 and 2018.
-- **short_title:** Many of the bill titles are longer, but the short titles are probably what you hear in the news. For example, the long title of the Taxpayer First Act is "To amend the Internal Revenue Code of 1986 to modernize and improve the Internal Revenue Service, and for other purposes." Of course, that's not memorable or appealing. 
+- **short_title:** Many of the bill titles are longer, but the short titles are probably what you hear in the news. For example, the long title of the `r bill_name` is "`r bill_long_title`". 
 - **sponsor:** The format of the sponsor column is as follows: The sponsor, the sponsor's state (abbreviated), the sponsor's party (They are usually either Democrat or Republican), number of cosponsors.
 - **latest_major_action:** If a bill becomes a law, the latest major action should read "Became Public Law No: 115-xxx" with 115 meaning the 115th Congress.
 - **congressdotgov_url:** Clicking on this url leads you to the congress.gov page for the bill.
 
 
-#### Resources
-https://en.wikipedia.org/wiki/Concurrent_resolution
 
 ## Part Two: Specific Bill
-
-```{r specific_bill_info, echo=FALSE}
-bill_name <- bills[bills$short_title == "Taxpayer First Act", "short_title"]
-sponsor <- bills[bills$short_title == "Taxpayer First Act", "sponsor_name"]
-sponsor_party <- bills[bills$short_title == "Taxpayer First Act", "sponsor_party"]
-sponsor_state <- bills[bills$short_title == "Taxpayer First Act", "sponsor_state"]
-cosponsors <- bills[bills$short_title == "Taxpayer First Act", "cosponsors"]
-latest_major_action <- bills[bills$short_title == "Taxpayer First Act", "latest_major_action"]
-link_to_text <- bills[bills$short_title == "Taxpayer First Act", "congressdotgov_url"]
-```
 
 ###`r bill_name`
 
 #### Bill Basics
-`r bill_name` was sponsored by `r sponsor` (`r sponsor_party`, `r sponsor_state`) and has `r cosponsors` cosponsors. Where the bill is now: `r latest_major_action`.
+>`r bill_name` was sponsored by `r sponsor` (`r sponsor_party`, `r sponsor_state`) and has `r cosponsors` cosponsors. Where the bill is now: `r latest_major_action`.
 
-Link to full [bill text](`r link_to_text`)
+>Link to full [bill text](`r link_to_text`)
 
 #### What is it?
-What is this bill about? Provide your own description of the bill's purpose and context. This will almost certainly require you to do some outside research to understand the full effects of the bill, the factors that led to it, its (expected) impacts, etc. Remember to cite/footnote your sources!
+>The `r bill_name` reauthorizes funding for the FAA for the next five years. In response to recent incidents of involuntary bumping, the bill prohibits airliners from involuntarily bumping passengers once passengers are seated and directs the Secretary of Transportation to clarify compensation rules for involuntary bumping. The bill addresses some recent trends:
+
+-There's been a recent uptick of pets on planes, which may explain why the bill addresses concerns about the rights of passengers with disibilities by calling for a review of best practices. 
+- Vaping is becoming more popular. The bill amends the existing non-smoking law to apply to e-cigarettes. 
+- If you feel like your seat has been getting smaller, this bill addresses that. The bill issues regulations establishing minimum seat dimension standards on passenger aircraft.
+
+##### Other Bill Highlights
+
+- Urges the FAA to investigate the recent Southwest Airlines airplane crash
+- Provides for training FAA personnel on the latest technology 
+- Requires the FAA to review advanced cockpit displays and evacuation procedures. 
+- Addresses speeding up the regulation of drones. 
+- The bill prohibits cellphone use and voice communications while in-flight
+- Establishes of a Lithium Ion Battery Safety Advisory Committee
+- Directs the FAA to esablish R&D programs to solve problems like air traffic surveillance over ocean (which, can't be done right now)
 
 You should take an evaluative stance in describing this bill. Is it something we should encourage our representatives to vote for? To vote against?
 
@@ -69,14 +99,7 @@ What actions have been taken regarding the bill? Has it been voted on (even mult
 
 ## Part 3: Representative
 
-```{r Representative Info, echo = FALSE}
 
-name <- paste(member$first_name, member$last_name)
-phone <- roles_df[roles_df$congress == "115", "phone"]
-dotgov <- member$url  
-twitter <- member$twitter_account
-
-```
 
 ### `r name`
 - Phone Number: `r phone`
@@ -89,15 +112,9 @@ twitter <- member$twitter_account
 
 `r name` voted against his party `r pct_rep_vote_with_other_party`% of the time in the 115th Congress.
 
+##Sources:
+- [House passes FAA reauthorization bill](https://www.cnn.com/2018/04/27/politics/faa-reauthorization-transportation-house-congress/index.html)
 
+- [FAA Reauthorization Act of 2018 Summary](https://www.govtrack.us/congress/bills/115/hr4/summary)
 
-
-
-
-
-
-## Questions
-
-1. Getting phone number from a list nested in a dataframe, can't use flatten b/c roles isn't a list
-2. 
-3. what are these variables? Where do I put them? In the .R or .Rmd file? pass what argument through what function, where?
+- [Concurrent Resolution](https://en.wikipedia.org/wiki/Concurrent_resolution)
